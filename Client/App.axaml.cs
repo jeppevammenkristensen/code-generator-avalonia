@@ -6,6 +6,8 @@ using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Client.ViewModels;
 using Client.Views;
+using Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -14,7 +16,9 @@ namespace Client;
 
 public partial class App : Application
 {
-    public IHost? GlobalHost { get; private set; }
+    private IHost? _host;
+    
+    public IHost GlobalHost => _host ?? throw new InvalidOperationException("The application has not been initialized.");
     
     public override void Initialize()
     {
@@ -23,10 +27,10 @@ public partial class App : Application
 
     public override async void OnFrameworkInitializationCompleted()
     {
-        GlobalHost = CreateHostBuilder().Build();
-        
         try
         {
+            _host = CreateHostBuilder().Build();
+            
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
@@ -41,20 +45,27 @@ public partial class App : Application
                 {
                     await GlobalHost.StopAsync();
                     GlobalHost.Dispose();
-                    GlobalHost = null;
+                    _host = null;
                 };
             }
 
             DataTemplates.Add(GlobalHost.Services.GetRequiredService<ViewLocator>());
+            
+            var dbContext = GlobalHost.Services.GetRequiredService<DataContext>();
+            var pendingMigrations = await dbContext.Database.GetPendingMigrationsAsync();
+            if (pendingMigrations.Any())
+            {
+                await dbContext.Database.MigrateAsync();
+            }
             
             base.OnFrameworkInitializationCompleted();
             await GlobalHost.StartAsync();
         }
         catch (Exception e)
         { 
-            if (GlobalHost is {})
+            if (_host is {})
                 GlobalHost.Services.GetRequiredService<ILogger<App>>().LogCritical(e, "Failed to start the application.");
-           throw;
+            throw;
         }
     }
 
@@ -80,7 +91,13 @@ public partial class App : Application
                     .AddTransient<ViewLocator>()
                     .AddTransient<MainWindowViewModel>()
                     .AddView<CodeToFormViewModel, CodeToForm>();
+
+                service.AddDbContext<DataContext>(cfg =>
+                {
+                    cfg.UseSqlite("Data Source=data.db");
+                });
             });
 
     }
 }
+

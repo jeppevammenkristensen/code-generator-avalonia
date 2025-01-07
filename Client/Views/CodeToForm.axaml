@@ -2,13 +2,158 @@
     x:Class="Client.Views.CodeToForm"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
+    xmlns:codeToForms="clr-namespace:Client.Services.CodeToForms"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:Client.Models"
     xmlns:viewModels="clr-namespace:Client.ViewModels"
     d:DesignHeight="450"
     d:DesignWidth="800"
     x:DataType="viewModels:CodeToFormViewModel"
     mc:Ignorable="d">
-    <TextBlock Text="{Binding Title}">
-    </TextBlock>
+    <UserControl.Styles>
+        <Style Selector="GridSplitter">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
+            <Setter Property="Margin" Value="5">
+            </Setter>
+        </Style>
+    </UserControl.Styles>
+    <Grid RowDefinitions="*, Auto,*,Auto">
+        <Grid
+            Grid.Row="0"
+            Grid.ColumnSpan="2"
+            RowDefinitions="Auto,*,Auto">
+            <Label
+                Grid.Row="0"
+                Grid.Column="0">
+                Source
+            </Label>
+            <avaloniaEdit:TextEditor
+                Grid.Row="1"
+                Grid.Column="0"
+                Margin="5"
+                FontFamily="Cascadia Code,Consolas,Menlo,Monospace"
+                ShowLineNumbers="True"
+                SyntaxHighlighting="C#">
+                <Interaction.Behaviors>
+                    <models:DocumentTextBindingBehavior Text="{Binding Source, Mode=TwoWay}" />
+                </Interaction.Behaviors>
+            </avaloniaEdit:TextEditor>
+            <Button
+                Grid.Row="2"
+                Grid.Column="0"
+                Command="{Binding GeneratePropertiesCommand}"
+                Content="Update properties" />
+        </Grid>
+        <GridSplitter
+            Grid.Row="1"
+            Grid.Column="0"
+            Height="2"
+            Margin="0"
+            HorizontalAlignment="Stretch">
+        </GridSplitter>
+
+        <Grid
+            Grid.Row="2"
+            Grid.Column="0"
+            ColumnDefinitions="2*,Auto,*">
+            <Grid ColumnDefinitions="*,Auto">
+                <DataGrid
+                    Name="DataGrid"
+                    Grid.Column="0"
+                    AutoGenerateColumns="False"
+                    ItemsSource="{Binding Properties}">
+                    <DataGrid.Columns>
+                        <!--  Checked  -->
+                        <DataGridCheckBoxColumn
+                            Binding="{Binding Checked, Mode=TwoWay}"
+                            Header="Use">
+                        </DataGridCheckBoxColumn>
+
+                        <!--  PropertyName  -->
+                        <DataGridTextColumn
+                            Binding="{Binding Name}"
+                            Header="PropertyName"
+                            IsReadOnly="True">
+                        </DataGridTextColumn>
+
+                        <DataGridTextColumn
+                            Binding="{Binding Type}"
+                            Header="Type"
+                            IsReadOnly="True">
+                        </DataGridTextColumn>
+
+                        <DataGridTemplateColumn Header="Component Type">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate DataType="codeToForms:CodeToFormProperty">
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Text="{Binding ComponentType}">
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                            <DataGridTemplateColumn.CellEditingTemplate>
+                                <DataTemplate DataType="codeToForms:CodeToFormProperty">
+                                    <ComboBox
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        ItemsSource="{Binding #DataGrid.((viewModels:CodeToFormViewModel)DataContext).ComponentTypes}"
+                                        SelectedItem="{Binding ComponentType}">
+                                    </ComboBox>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellEditingTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn
+                            Binding="{Binding LabelName}"
+                            Header="Label">
+
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="5,0,5,0"
+                    VerticalAlignment="Top"
+                    Command="{Binding BuildCommand}"
+                    Content="Build">
+                </Button>
+            </Grid>
+
+            <GridSplitter
+                Grid.Column="1"
+                Width="2">
+
+            </GridSplitter>
+
+            <avaloniaEdit:TextEditor
+                Grid.Row="0"
+                Grid.Column="2"
+                Margin="0"
+                FontFamily="Cascadia Code,Consolas,Menlo,Monospace"
+                IsReadOnly="True"
+                ShowLineNumbers="True"
+                SyntaxHighlighting="XML">
+                <Interaction.Behaviors>
+                    <models:DocumentTextBindingBehavior Text="{Binding Xaml, Mode=TwoWay}">
+                    </models:DocumentTextBindingBehavior>
+                </Interaction.Behaviors>
+                <avaloniaEdit:TextEditor.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem
+                            Click="MenuItem_OnClick"
+                            Header="Copy">
+                        </MenuItem>
+                    </ContextMenu>
+                </avaloniaEdit:TextEditor.ContextMenu>
+            </avaloniaEdit:TextEditor>
+        </Grid>
+
+
+
+    </Grid>
+
 </UserControl>
