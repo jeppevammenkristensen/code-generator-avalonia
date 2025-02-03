@@ -11,7 +11,7 @@ namespace Client.ViewModels;
 
 public partial class CodeToFormViewModel : Screen
 {
-    private readonly MainWindowViewModel _parent;
+    private MainWindowViewModel? _parent;
 
     [NotifyCanExecuteChangedFor(nameof(GeneratePropertiesCommand))]
     [ObservableProperty] private string _source = """
@@ -27,9 +27,8 @@ public class Someclass
     [NotifyPropertyChangedFor(nameof(Properties))]
     private CodeToFormsContext? _context;
 
-    public CodeToFormViewModel(MainWindowViewModel parent)
+    public CodeToFormViewModel()
     {
-        _parent = parent;
         _service = new CodeToFormsService();
         Title = "Code to form";
     }
@@ -46,7 +45,7 @@ public class Someclass
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(BuildCommand))]
-    private ObservableCollection<CodeToFormProperty> _properties = new ObservableCollection<CodeToFormProperty>();
+    private ObservableCollection<CodeToFormProperty> _properties = new ();
 
     private readonly CodeToFormsService _service;
 
@@ -74,5 +73,10 @@ public class Someclass
     public void UpdateStatus(string statusText)
     {
         _parent.Status = statusText;
+    }
+
+    public override void SetParent(MainWindowViewModel parent)
+    {
+        _parent = parent;
     }
 }

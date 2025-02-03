@@ -9,9 +9,4 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
     }
-
-    private void MenuItem_OnClick(object? sender, RoutedEventArgs e)
-    {
-        int i = 0;
-    }
 }

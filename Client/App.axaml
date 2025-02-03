@@ -2,6 +2,7 @@
     x:Class="Client.App"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
     RequestedThemeVariant="Light">
     <!--  "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options.  -->
 
@@ -11,5 +12,12 @@
         <FluentTheme />
         <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+        <StyleInclude Source="avares://Client/Assets/Icons.axaml" />
+        <Style Selector="GridSplitter">
+            <Setter Property="Background" Value="{DynamicResource SystemControlBackgroundBaseLowBrush}" />
+            <Setter Property="Margin" Value="5">
+            </Setter>
+        </Style>
+        <avalonia:MaterialIconStyles />
     </Application.Styles>
 </Application>

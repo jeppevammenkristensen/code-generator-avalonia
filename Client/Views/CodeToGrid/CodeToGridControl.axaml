@@ -1,0 +1,201 @@
+﻿
+<UserControl
+    x:Class="Client.Views.CodeToGrid.CodeToGridControl"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:avalonia="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+    xmlns:avaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
+    xmlns:codeToGrid="clr-namespace:Client.ViewModels.CodeToGrid"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:Client.Models"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:DataType="codeToGrid:CodeToGridViewModel"
+    mc:Ignorable="d">
+    <UserControl.Styles>
+
+        <Style Selector="Control.AutoMargin">
+            <Setter Property="Margin" Value="5" />
+        </Style>
+    </UserControl.Styles>
+
+
+    <SplitView
+        CompactPaneLength="45"
+        DisplayMode="CompactInline"
+        IsPaneOpen="{Binding PaneOpen}"
+        OpenPaneLength="300"
+        PanePlacement="Left">
+        <SplitView.Pane>
+            <!--  Pane  -->
+            <StackPanel
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Top"
+                Orientation="Vertical"
+                Spacing="5">
+                <!--  expand button  -->
+
+                <Button
+                    Width="32"
+                    Height="32"
+                    Margin="7,10"
+                    HorizontalAlignment="Right"
+                    Command="{Binding TogglePaneCommand}">
+                    <StackPanel>
+                        <avalonia:MaterialIcon
+                            IsVisible="{Binding PaneOpen}"
+                            Kind="ChevronLeft">
+                        </avalonia:MaterialIcon>
+                        <avalonia:MaterialIcon
+                            IsVisible="{Binding !PaneOpen}"
+                            Kind="ChevronRight">
+                        </avalonia:MaterialIcon>
+                    </StackPanel>
+
+                </Button>
+
+                <!--  Template  -->
+
+                <StackPanel IsVisible="{Binding PaneOpen}">
+                    <TextBlock>Template</TextBlock>
+                    <ComboBox
+                        ItemsSource="{Binding Templates}"
+                        SelectedItem="{Binding SelectedTemplate, Mode=TwoWay}">
+                    </ComboBox>
+                </StackPanel>
+
+            </StackPanel>
+        </SplitView.Pane>
+
+        <!--  Content  -->
+
+        <Grid RowDefinitions="*,Auto,*">
+            <Grid
+                ColumnDefinitions="Auto,*"
+                RowDefinitions="Auto,*,Auto,Auto">
+
+                <Label
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Content="Source" />
+                <avaloniaEdit:TextEditor
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Classes="AutoMargin"
+                    FontFamily="Cascadia Code,Consolas,Menlo,Monospace"
+                    ShowLineNumbers="True"
+                    SyntaxHighlighting="C#">
+                    <Interaction.Behaviors>
+                        <models:DocumentTextBindingBehavior Text="{Binding Source, Mode=TwoWay}" />
+                    </Interaction.Behaviors>
+                    <avaloniaEdit:TextEditor.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem
+                                Command="{Binding FormatCommand}"
+                                Header="Format">
+                            </MenuItem>
+                        </ContextMenu>
+                    </avaloniaEdit:TextEditor.ContextMenu>
+                </avaloniaEdit:TextEditor>
+                <Label
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    Content="DataProperty" />
+                <TextBox
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Classes="AutoMargin"
+                    Text="{Binding Path=DataProperty, Mode=TwoWay}" />
+                <Button
+                    Grid.Row="3"
+                    Grid.Column="0"
+                    Classes="AutoMargin"
+                    Command="{Binding AnalyzeCommand}"
+                    Content="Submit" />
+            </Grid>
+
+            <GridSplitter
+                Grid.Row="1"
+                Height="5"
+                HorizontalAlignment="Stretch">
+            </GridSplitter>
+
+            <!--  Lower part  -->
+
+            <Grid
+                Grid.Row="2"
+                ColumnDefinitions="*,auto,*">
+                <Grid RowDefinitions="*,auto">
+                    <DataGrid
+                        AutoGenerateColumns="False"
+                        CanUserReorderColumns="True"
+                        CanUserSortColumns="True"
+                        ItemsSource="{Binding Properties}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Binding="{Binding Name}"
+                                Header="Name"
+                                IsReadOnly="True">
+                            </DataGridTextColumn>
+                            <DataGridTextColumn
+                                Binding="{Binding Type}"
+                                Header="Type"
+                                IsReadOnly="True">
+                            </DataGridTextColumn>
+                            <DataGridTextColumn
+                                Binding="{Binding ColumnType}"
+                                Header="ColumnType"
+                                IsReadOnly="True">
+                            </DataGridTextColumn>
+                            <DataGridTextColumn
+                                Binding="{Binding UnderlyingTypeAsString}"
+                                Header="Underlying Type"
+                                IsReadOnly="True">
+                            </DataGridTextColumn>
+                            <DataGridCheckBoxColumn
+                                Binding="{Binding IsChecked}"
+                                Header="Use"
+                                IsReadOnly="False">
+                            </DataGridCheckBoxColumn>
+                            <DataGridCheckBoxColumn
+                                Binding="{Binding IsEnumerable}"
+                                Header="Collection"
+                                IsReadOnly="True">
+                            </DataGridCheckBoxColumn>
+                            <DataGridTextColumn
+                                Binding="{Binding HeaderName}"
+                                Header="Header name"
+                                IsReadOnly="False">
+                            </DataGridTextColumn>
+                            <DataGridCheckBoxColumn
+                                Binding="{Binding IsReadonly}"
+                                Header="Is readonly"
+                                IsReadOnly="False">
+                            </DataGridCheckBoxColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <Button
+                        Grid.Row="1"
+                        Command="{Binding GenerateCommand}"
+                        Content="Generate">
+                    </Button>
+                </Grid>
+                <GridSplitter
+                    Grid.Column="1"
+                    VerticalAlignment="Stretch">
+                </GridSplitter>
+                <avaloniaEdit:TextEditor
+                    Grid.Column="2"
+                    IsReadOnly="true"
+                    SyntaxHighlighting="XML">
+                    <Interaction.Behaviors>
+                        <models:DocumentTextBindingBehavior Text="{Binding GeneratedCode}">
+                        </models:DocumentTextBindingBehavior>
+                    </Interaction.Behaviors>
+
+                </avaloniaEdit:TextEditor>
+            </Grid>
+        </Grid>
+    </SplitView>
+</UserControl>

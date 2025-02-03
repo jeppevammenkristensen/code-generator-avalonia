@@ -13,20 +13,19 @@
     Icon="/Assets/avalonia-logo.ico"
     mc:Ignorable="d">
 
-    <Design.DataContext>
-        <!--
-            This only sets the DataContext for the previewer in an IDE,
-            to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs)
-        -->
-        <vm:MainWindowViewModel />
-    </Design.DataContext>
-
     <Grid RowDefinitions="Auto,*,Auto">
         <Menu>
             <MenuItem Header="File">
-                <MenuItem
-                    Command="{Binding New}"
-                    Header="New" />
+                <MenuItem Header="New">
+                    <MenuItem
+                        Command="{Binding NewCodeToForm}"
+                        Header="Code to Form">
+                    </MenuItem>
+                    <MenuItem
+                        Command="{Binding NewCodeToGrid}"
+                        Header="Code to Grid">
+                    </MenuItem>
+                </MenuItem>
                 <MenuItem Header="Open" />
                 <MenuItem Header="Save" />
                 <MenuItem Header="Exit" />

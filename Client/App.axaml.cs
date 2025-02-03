@@ -4,8 +4,11 @@ using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
+using Client.Services;
 using Client.ViewModels;
+using Client.ViewModels.CodeToGrid;
 using Client.Views;
+using Client.Views.CodeToGrid;
 using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -87,10 +90,16 @@ public partial class App : Application
         return Host.CreateDefaultBuilder(Environment.GetCommandLineArgs())
             .ConfigureServices((context, service) =>
             {
+                service.AddTransient<IServiceLocator, ServiceCollectionLocator>();
+
                 service
                     .AddTransient<ViewLocator>()
                     .AddTransient<MainWindowViewModel>()
-                    .AddView<CodeToFormViewModel, CodeToForm>();
+                    .AddTransient<CodeToGridViewModel>()
+                    .AddTransient<CodeToFormViewModel>()
+                    .AddView<CodeToFormViewModel, CodeToForm>()
+                    .AddView<CodeToGridViewModel, CodeToGridControl>();
+                
 
                 service.AddDbContext<DataContext>(cfg =>
                 {
